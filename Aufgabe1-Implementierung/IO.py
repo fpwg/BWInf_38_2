@@ -1,7 +1,7 @@
 import os.path
-from graphics import Line, Point, GraphWin, Circle, color_rgb
+from graphics import Rectangle, Point, GraphWin, Circle, color_rgb, Text, Line
 
-DISPLAY_SCALE = 50
+DISPLAY_SCALE = 70
 
 
 def parse_tuple(string):
@@ -62,3 +62,40 @@ def load_file(filename=""):
 
     print("Level fertig eingelesen")
     return size, start, energy, batteries
+
+
+def display_level(size, batteries, start, energy):
+    win = GraphWin("Stromrallye", size * DISPLAY_SCALE, size * DISPLAY_SCALE, autoflush=False)
+    for x in range(0, size):
+        for y in range(0, size):
+            rect = Rectangle(Point(x*DISPLAY_SCALE, y*DISPLAY_SCALE), Point(x*DISPLAY_SCALE+DISPLAY_SCALE, y*DISPLAY_SCALE+DISPLAY_SCALE))
+            rect.setFill("white")
+            rect.setOutline("black")
+            rect.draw(win)
+            if (x, y) == start:
+                circle = Circle(Point((x+0.5)*DISPLAY_SCALE, (y+0.5)*DISPLAY_SCALE), DISPLAY_SCALE/3)
+                circle.setFill("green")
+                circle.setOutline("green")
+                circle.draw(win)
+                text = Text(Point((x+0.5)*DISPLAY_SCALE, (y+0.5)*DISPLAY_SCALE), str(energy))
+                text.setSize(20)
+                text.draw(win)
+            elif (x, y) in batteries:
+                text = Text(Point((x+0.5)*DISPLAY_SCALE, (y+0.5)*DISPLAY_SCALE), str(batteries[(x,y)]))
+                text.setSize(20)
+                text.draw(win)
+    win.flush()
+    return win
+
+
+def display_solution(win, solution):
+    for i in range(1, len(solution)):
+        point_a = Point((solution[i-1][0] + 0.5) * DISPLAY_SCALE, (solution[i-1][1] + 0.5) * DISPLAY_SCALE)
+        point_b = Point((solution[i][0] + 0.5) * DISPLAY_SCALE, (solution[i][1] + 0.5) * DISPLAY_SCALE)
+        line = Line(point_a, point_b)
+        line.setFill("red")
+        line.setArrow("last")
+        line.setWidth(3)
+        line.draw(win)
+    win.flush()
+    return win
